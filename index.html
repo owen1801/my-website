@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7f2">
+  <title>松果 · 健康获客工作台</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1f352b;
+      --muted: #758078;
+      --green: #28684c;
+      --green-dark: #194b37;
+      --green-pale: #e8f2e9;
+      --cream: #f5f7f2;
+      --line: #e6eae3;
+      --white: #fff;
+      --shadow: 0 14px 42px rgba(30, 55, 40, .075);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background: var(--cream);
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+    button, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    .topbar {
+      height: 68px;
+      padding: 0 max(24px, calc((100vw - 1160px) / 2));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,.86);
+      border-bottom: 1px solid rgba(230,234,227,.8);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; letter-spacing: .2px; }
+    .brand-mark {
+      width: 31px; height: 31px; display: grid; place-items: center;
+      border-radius: 10px; color: #fff; background: var(--green); font-size: 17px;
+    }
+    .demo-label { display: flex; align-items: center; gap: 7px; color: #78827b; font-size: 12px; }
+    .demo-dot { width: 7px; height: 7px; border-radius: 50%; background: #d1a447; }
+    main { max-width: 1160px; margin: 0 auto; padding: 36px 24px 48px; }
+    .intro { margin-bottom: 27px; }
+    .eyebrow { color: var(--green); font-size: 12px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { margin: 8px 0 7px; font-size: clamp(25px, 3vw, 34px); line-height: 1.22; letter-spacing: -.04em; }
+    .intro p { margin: 0; color: var(--muted); }
+    .workspace { display: grid; grid-template-columns: minmax(0, .98fr) minmax(0, 1.02fr); gap: 20px; align-items: start; }
+    .panel { background: var(--white); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+    .form-panel { padding: 25px; }
+    .panel-head { display: flex; align-items: center; gap: 11px; margin-bottom: 20px; }
+    .step {
+      width: 28px; height: 28px; flex: 0 0 28px; display: grid; place-items: center;
+      border-radius: 50%; color: var(--green); background: var(--green-pale); font-size: 13px; font-weight: 700;
+    }
+    h2 { margin: 0; font-size: 17px; line-height: 1.35; }
+    .help { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+    .field-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 600; }
+    .optional { color: #929b94; font-size: 12px; font-weight: 400; }
+    textarea {
+      display: block; width: 100%; min-height: 112px; resize: vertical; padding: 13px 14px;
+      color: var(--ink); background: #fcfdfb; border: 1px solid #dfe5dc; border-radius: 11px;
+      outline-color: #6a9a7b; line-height: 1.6;
+    }
+    textarea::placeholder { color: #a1aaa3; }
+    .example-hint { margin: 7px 0 22px; color: var(--muted); font-size: 12px; }
+    .resonance { margin: 0 0 21px; }
+    .resonance-head { display:flex; align-items:baseline; justify-content:space-between; gap: 10px; margin-bottom: 9px; }
+    .resonance-title { margin: 0; font-size: 13px; font-weight: 650; }
+    .resonance-note { color: var(--muted); font-size: 11px; }
+    .pain-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .pain-chip { padding: 7px 10px; border: 1px solid #e2e8df; border-radius: 9px; color: #526158; background: #fbfcfa; font-size: 12px; text-align: left; line-height: 1.35; }
+    .pain-chip:hover, .pain-chip.is-active { border-color: #81a88d; color: var(--green-dark); background: #eff7f0; }
+    .upload-label { color: var(--green); font-weight: 600; cursor: pointer; }
+    .upload-label:hover { text-decoration: underline; }
+    input[type=file] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; clip-path: inset(50%); }
+    .upload-status { margin-left: 5px; }
+    .section-label { margin: 0 0 10px; font-weight: 600; }
+    .solution-list { display: grid; gap: 9px; }
+    .solution {
+      position: relative; display: flex; gap: 11px; align-items: flex-start; padding: 12px 13px;
+      border: 1px solid #e5e9e2; border-radius: 12px; cursor: pointer; transition: .15s ease;
+    }
+    .solution:has(input:checked) { border-color: #6d9a7c; background: #f3f8f3; box-shadow: 0 0 0 2px rgba(63,119,81,.08); }
+    .solution input { width: 16px; height: 16px; margin: 3px 0 0; accent-color: var(--green); }
+    .solution-title { display: block; font-weight: 600; font-size: 14px; }
+    .solution-desc { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+    .settings-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+    .setting-title { margin: 0 0 7px; font-size: 13px; font-weight: 600; }
+    select {
+      width: 100%; height: 42px; padding: 0 11px; color: var(--ink); background: white;
+      border: 1px solid #dfe5dc; border-radius: 10px;
+    }
+    .generate {
+      width: 100%; min-height: 48px; margin-top: 20px; border: 0; border-radius: 11px;
+      color: white; background: var(--green); font-weight: 650; transition: background .15s, transform .15s;
+    }
+    .generate:hover { background: var(--green-dark); transform: translateY(-1px); }
+    .generate:focus-visible, .tool-button:focus-visible, .tab:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #9ac3a5; outline-offset: 2px; }
+    .privacy { display: flex; gap: 8px; margin-top: 14px; padding: 11px 12px; border-radius: 10px; background: #f6f8f5; color: #68736b; font-size: 11px; }
+    .privacy-mark { color: var(--green); font-weight: 700; }
+    .result-panel { overflow: hidden; }
+    .result-top { padding: 23px 24px 17px; border-bottom: 1px solid var(--line); }
+    .result-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .result-title { display: flex; align-items: center; gap: 10px; }
+    .result-title h2 { font-size: 18px; }
+    .result-badge { padding: 4px 8px; border-radius: 99px; color: var(--green); background: var(--green-pale); font-size: 11px; white-space: nowrap; }
+    .result-sub { margin: 5px 0 0 38px; color: var(--muted); font-size: 12px; }
+    .tabs { display: flex; gap: 6px; margin-top: 17px; }
+    .tab { border: 0; padding: 7px 12px; border-radius: 8px; color: #748078; background: transparent; font-size: 13px; }
+    .tab[aria-selected="true"] { color: var(--green-dark); background: var(--green-pale); font-weight: 600; }
+    .result-body { padding: 19px 24px 23px; }
+    .content-block { margin-bottom: 17px; }
+    .block-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; color: #778179; font-size: 11px; font-weight: 650; letter-spacing: .04em; }
+    .content-box { padding: 12px 13px; border-radius: 10px; background: #f7f9f6; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .hook { color: var(--green-dark); font-size: 16px; font-weight: 650; line-height: 1.5; }
+    .script { color: #39463e; font-size: 13px; line-height: 1.75; }
+    .cta { color: #39463e; font-size: 13px; line-height: 1.6; }
+    .result-actions { display: flex; gap: 9px; margin-top: 19px; }
+    .tool-button { min-height: 40px; padding: 0 13px; border: 1px solid #dce4da; border-radius: 9px; color: var(--green-dark); background: white; font-size: 12px; font-weight: 600; }
+    .tool-button:hover { background: #f5f8f4; }
+    .tool-button.primary { color: white; background: var(--green); border-color: var(--green); }
+    .tool-button.primary:hover { background: var(--green-dark); }
+    .tool-button:disabled { opacity: .6; cursor: wait; }
+    .image-intro { margin: -2px 0 10px; color: var(--muted); font-size: 12px; line-height: 1.65; }
+    .image-result { margin-top: 12px; }
+    .image-preview { display: block; width: min(100%, 300px); max-height: 430px; margin: 0 auto; object-fit: contain; border-radius: 10px; background: #f1f4f0; }
+    .image-link { display: inline-block; margin-top: 8px; color: var(--green); font-size: 12px; font-weight: 600; text-decoration: none; }
+    .image-link:hover { text-decoration: underline; }
+    .image-error { margin-top: 9px; color: #a74438; font-size: 12px; }
+    .disclaimer { margin: 15px 0 0; color: #879088; font-size: 11px; line-height: 1.6; }
+    .plan-strip { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-top: 18px; padding: 14px 16px; border: 1px solid #e1e8df; border-radius: 12px; color: #536157; background: rgba(255,255,255,.65); font-size: 12px; }
+    .plan-strip strong { display: block; margin-bottom: 2px; color: var(--ink); font-size: 13px; }
+    .plan-arrow { color: var(--green); font-size: 18px; }
+    .toast { position: fixed; z-index: 5; right: 24px; bottom: 22px; padding: 11px 15px; color: white; background: #244f39; border-radius: 10px; box-shadow: var(--shadow); opacity: 0; transform: translateY(8px); pointer-events: none; transition: .2s ease; font-size: 13px; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    @media (max-width: 800px) {
+      main { padding-top: 27px; }
+      .workspace { grid-template-columns: 1fr; }
+      .result-panel { grid-row: 2; }
+    }
+    @media (max-width: 480px) {
+      .topbar { height: 58px; padding: 0 16px; }
+      main { padding: 23px 14px 32px; }
+      .form-panel { padding: 19px 16px; }
+      .result-top { padding: 19px 17px 14px; }
+      .result-body { padding: 16px 17px 19px; }
+      .settings-row { grid-template-columns: 1fr; gap: 12px; }
+      .result-actions { flex-wrap: wrap; }
+      .tool-button { flex: 1; }
+      .demo-label { font-size: 11px; }
+      .plan-strip { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">松</span><span>松果 · 健康获客工作台</span></div>
+    <div class="demo-label"><span class="demo-dot" aria-hidden="true"></span>可交互演示版</div>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div class="eyebrow">从获客难题，到内容草稿</div>
+      <h1 id="page-title">把你的获客难题，变成一条可发布的内容。</h1>
+      <p>选一个现成方案，先做出抖音和视频号的内容初稿。简单几步就能体验。</p>
+    </section>
+
+    <div class="workspace">
+      <section class="panel form-panel" aria-label="填写获客问题并选择方案">
+        <div class="panel-head">
+          <span class="step">1</span>
+          <div><h2>说说你现在卡在哪里</h2><span class="help">写你自己的获客难点，不需要专业术语</span></div>
+        </div>
+        <label class="field-label" for="pain">我最头疼的获客问题 <span class="optional">最多 300 字</span></label>
+        <textarea id="pain" maxlength="300" placeholder="例如：视频有人看，但几乎没人来咨询……">用户看了视频，但很少主动咨询，线索来了也容易断联。</textarea>
+        <div class="example-hint">
+          不想打字？<label class="upload-label" for="pain-file">上传 TXT 文本</label><input id="pain-file" type="file" accept=".txt,text/plain"><span class="upload-status" id="upload-status" aria-live="polite"></span>
+        </div>
+        <div class="resonance">
+          <div class="resonance-head"><p class="resonance-title">你是不是也遇到这些？</p><span class="resonance-note">点一下，直接带入问题</span></div>
+          <div class="pain-chips" id="pain-chips" aria-label="大健康行业常见获客痛点"></div>
+        </div>
+
+        <div class="panel-head" style="margin-bottom:12px">
+          <span class="step">2</span>
+          <div><h2>选一个想先尝试的方案</h2><span class="help">先从一种方法开始，后续可以再扩展</span></div>
+        </div>
+        <div class="solution-list" role="radiogroup" aria-label="预设获客方案">
+          <label class="solution"><input type="radio" name="solution" value="短视频内容获客" checked><span><span class="solution-title">短视频内容获客</span><span class="solution-desc">选题思路 + 开场钩子 + 轻量行动引导</span></span></label>
+          <label class="solution"><input type="radio" name="solution" value="私域咨询承接"><span><span class="solution-title">私域咨询承接</span><span class="solution-desc">从内容引导到需求了解与后续回访</span></span></label>
+          <label class="solution"><input type="radio" name="solution" value="直播预约互动"><span><span class="solution-title">直播预约互动</span><span class="solution-desc">用明确主题邀请目标用户预约、提问</span></span></label>
+        </div>
+
+        <div class="settings-row">
+          <div>
+            <label class="setting-title" for="platform">发布平台</label>
+            <select id="platform"><option value="both" selected>抖音 + 视频号</option><option value="douyin">抖音</option><option value="wechat">视频号</option></select>
+          </div>
+          <div>
+            <label class="setting-title" for="audience">主要服务对象</label>
+            <select id="audience"><option>健康管理从业者</option><option>营养与运动服务</option><option>养生门店经营者</option><option>其他大健康服务者</option></select>
+          </div>
+        </div>
+        <button type="button" class="generate" id="generate">帮我分析这个问题 <span aria-hidden="true">→</span></button>
+        <div class="privacy"><span class="privacy-mark" aria-hidden="true">✓</span><span>点击分析会将问题发送给 AI 服务，生成封面会发送配图提示词。请勿输入客户姓名、联系方式或健康隐私。</span></div>
+      </section>
+
+      <section class="panel result-panel" aria-label="获客内容预览">
+        <div class="result-top">
+          <div class="result-heading">
+            <div class="result-title"><span class="step">3</span><h2>你的内容初稿</h2></div>
+            <span class="result-badge">AI 获客顾问</span>
+          </div>
+          <p class="result-sub">先认真听懂问题，再给真实、具体、能落地的回应。</p>
+          <div class="tabs" id="platform-tabs" role="tablist" aria-label="预览发布平台"></div>
+        </div>
+        <div class="result-body" aria-live="polite" aria-atomic="true">
+          <div class="content-block"><div class="block-label">AI 针对你的问题</div><div class="content-box script" id="script-output">我会先理解你卡住的真实原因，再给你一套可以马上尝试的办法。写下问题，点「帮我分析这个问题」开始。</div></div>
+          <div class="result-actions">
+            <button type="button" class="tool-button primary" id="copy">复制 AI 回答</button>
+            <button type="button" class="tool-button" id="another">再分析一次</button>
+          </div>
+          <div class="content-block" style="margin-top:22px">
+            <div class="block-label">短视频封面配图 <span>可选</span></div>
+            <p class="image-intro">按所选服务方向和人群生成竖版配图。点击后会把配图提示词发送到已配置的生图服务，并可能消耗接口额度；不会发送你填写的获客难点或标题。</p>
+            <button type="button" class="tool-button" id="generate-image">生成竖版封面图</button>
+            <div class="image-result" id="image-result" hidden>
+              <img class="image-preview" id="image-preview" alt="生成的短视频封面配图">
+              <a class="image-link" id="image-link" target="_blank" rel="noopener noreferrer">在新窗口查看原图 ↗</a>
+            </div>
+            <div class="image-error" id="image-error" role="alert" hidden></div>
+          </div>
+          <p class="disclaimer">大健康内容发布前，请核对服务资质与平台当期规范；避免诊断、疗效承诺或夸大宣传。本草稿不是医疗建议。</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="plan-strip">
+      <div><strong>推荐的第一步</strong>先用一个细分服务方向，邀请 3–5 位同行试填，看看生成的内容是否真的能拿去改、拿去发。</div>
+      <span class="plan-arrow" aria-hidden="true">↗</span>
+    </div>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>window.LEAD_API_BASE = "https://added-minds-applies-toolbox.trycloudflare.com";</script>
+  <script>
+    (() => {
+      const apiBase = window.LEAD_API_BASE || '';
+      const painInput = document.getElementById('pain');
+      const platformSelect = document.getElementById('platform');
+      const audienceSelect = document.getElementById('audience');
+      const scriptOutput = document.getElementById('script-output');
+      const tabsRoot = document.getElementById('platform-tabs');
+      const toast = document.getElementById('toast');
+      const imageButton = document.getElementById('generate-image');
+      const imageResult = document.getElementById('image-result');
+      const imagePreview = document.getElementById('image-preview');
+      const imageLink = document.getElementById('image-link');
+      const imageError = document.getElementById('image-error');
+      const painChips = document.getElementById('pain-chips');
+      let activePlatform = 'douyin';
+      let toastTimer;
+
+      const painLibrary = [
+        ['视频有人看，没人咨询', '视频有播放量，但几乎没人私信或加微信。'],
+        ['发了很多，还是没曝光', '每天都在发内容，但播放量忽高忽低，不知道问题在哪。'],
+        ['不知道发什么内容', '专业知识很多，却不知道用户真正愿意看、愿意问什么。'],
+        ['一开口就像在卖货', '一介绍服务，用户就划走，自己也不喜欢硬推销的感觉。'],
+        ['同行价格更低', '客户总在比价格，解释了专业价值，还是觉得贵。'],
+        ['客户不信任我', '用户担心夸大宣传，不清楚我是否靠谱、是否适合自己。'],
+        ['咨询来了不会接', '有人来问，但不知道怎么自然了解需求，不想显得像审问。'],
+        ['聊完就没有下文', '当时聊得不错，过几天就失联，不知道怎么礼貌跟进。'],
+        ['加了微信不说话', '用户愿意加微信，却一直不回复，也不看朋友圈。'],
+        ['私域内容没人互动', '群里发了不少健康内容，大家很少回应或主动提问。'],
+        ['直播间没人停留', '直播准备了很久，进来的人很快离开，不知道怎么留住。'],
+        ['直播有人听不转化', '直播间有互动，但结束后几乎没有预约或咨询。'],
+        ['门店客流越来越少', '老客越来越少，新客没有稳定来源，投广告又怕浪费钱。'],
+        ['转介绍开不了口', '服务做得不错，却不好意思向客户提出转介绍。'],
+        ['客户只想要免费建议', '大家愿意问问题，但一提到付费服务就说再考虑。'],
+        ['不知道怎么定位', '什么都能做一点，用户却记不住我到底最擅长什么。'],
+        ['害怕平台违规', '想讲健康知识，又担心被判定为医疗宣传或疗效承诺。'],
+        ['没有案例不敢发', '刚开始做或案例不多，不知道怎样建立可信度。']
+      ];
+      painLibrary.forEach(([label, text]) => {
+        const button = document.createElement('button');
+        button.type = 'button'; button.className = 'pain-chip'; button.textContent = label;
+        button.setAttribute('aria-label', `选择痛点：${text}`);
+        button.addEventListener('click', () => {
+          painInput.value = text;
+          document.querySelectorAll('.pain-chip').forEach(item => item.classList.remove('is-active'));
+          button.classList.add('is-active');
+          painInput.focus(); render();
+        });
+        painChips.append(button);
+      });
+
+      function selectedSolution() {
+        return document.querySelector('input[name="solution"]:checked').value;
+      }
+      function platformList() {
+        if (platformSelect.value === 'douyin') return ['douyin'];
+        if (platformSelect.value === 'wechat') return ['wechat'];
+        return ['douyin', 'wechat'];
+      }
+      function shortPain(text) {
+        const clean = text.trim().replace(/[。！!？?]+$/g, '');
+        return clean.length > 21 ? clean.slice(0, 21) + '…' : clean;
+      }
+      function renderTabs() {
+        const platforms = platformList();
+        if (!platforms.includes(activePlatform)) activePlatform = platforms[0];
+        tabsRoot.replaceChildren();
+        platforms.forEach((platform, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'tab';
+          button.id = `tab-${platform}`;
+          button.setAttribute('role', 'tab');
+          button.setAttribute('aria-controls', 'preview-panel');
+          button.setAttribute('aria-selected', String(activePlatform === platform));
+          button.textContent = platform === 'douyin' ? '抖音' : '视频号';
+          button.addEventListener('click', () => { activePlatform = platform; render(); });
+          tabsRoot.append(button);
+        });
+      }
+      function render() {
+        renderTabs();
+        const platform = activePlatform === 'douyin' ? '抖音' : '视频号';
+        scriptOutput.closest('.content-block').setAttribute('aria-label', `AI 回答 · ${platform}表达参考`);
+      }
+      function fullCopyText() { return scriptOutput.textContent; }
+      async function requestAdvice() {
+        const pain = painInput.value.trim();
+        if (!pain) {
+          painInput.focus();
+          showToast('先写一句你现在遇到的获客难题');
+          return;
+        }
+        const button = document.getElementById('generate');
+        button.disabled = true;
+        document.getElementById('another').disabled = true;
+        button.textContent = '正在认真分析…';
+        scriptOutput.textContent = '我先把你的问题想清楚，再给你一份具体回应。';
+        try {
+          const response = await fetch(`${apiBase}/api/lead-advice`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              pain,
+              solution: selectedSolution(),
+              audience: audienceSelect.value,
+              platform: activePlatform === 'douyin' ? '抖音' : '视频号'
+            })
+          });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(payload.message || `AI 暂时不可用（HTTP ${response.status}）`);
+          if (!payload.answer) throw new Error('AI 没有返回回答，请再试一次。');
+          scriptOutput.textContent = payload.answer;
+        } catch (error) {
+          scriptOutput.textContent = error instanceof TypeError
+            ? '暂时连接不上 AI 服务，请稍后重试，或联系网站提供者确认服务已启动。'
+            : (error.message || '分析失败，请稍后重试。');
+        } finally {
+          button.disabled = false;
+          document.getElementById('another').disabled = false;
+          button.innerHTML = '帮我分析这个问题 <span aria-hidden="true">→</span>';
+        }
+      }
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+      }
+
+      document.getElementById('generate').addEventListener('click', () => {
+        activePlatform = platformList()[0];
+        render();
+        requestAdvice();
+      });
+      document.getElementById('another').addEventListener('click', requestAdvice);
+      document.getElementById('copy').addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(fullCopyText());
+          showToast('完整文案已复制');
+        } catch {
+          const field = document.createElement('textarea');
+          field.value = fullCopyText();
+          field.style.position = 'fixed'; field.style.opacity = '0';
+          document.body.append(field); field.select();
+          const ok = document.execCommand('copy');
+          field.remove();
+          showToast(ok ? '完整文案已复制' : '复制失败，请手动选择文案');
+        }
+      });
+      imageButton.addEventListener('click', async () => {
+        imageButton.disabled = true;
+        imageButton.textContent = '正在生成封面图…';
+        imageError.hidden = true;
+        try {
+          const solution = selectedSolution();
+          const audience = audienceSelect.value;
+          const imagePrompt = `为大健康服务领域生成一张短视频竖版封面背景图。面向${audience}，内容方向为${solution}。画面是一位专业服务者在明亮、自然、干净、可信赖的空间交流健康生活方式，温暖真实摄影风格，构图简洁，顶部留出干净空间供后期加标题。不要生成任何文字、品牌标识、医疗器械、药品包装、诊断图像、前后对比或疗效保证。`;
+          const response = await fetch(`${apiBase}/api/generate-image`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: imagePrompt, aspect_ratio: '9:16' })
+          });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(payload.message || `生成失败（HTTP ${response.status}）`);
+          if (!payload.imageUrl) throw new Error('接口没有返回图片，请稍后重试。');
+          imagePreview.src = payload.imageUrl;
+          imageLink.href = payload.imageUrl;
+          imageResult.hidden = false;
+          showToast('封面图已生成');
+        } catch (error) {
+          imageError.textContent = error instanceof TypeError
+            ? '暂时连接不上生图服务，请稍后重试，或联系网站提供者确认服务已启动。'
+            : (error && error.message ? error.message : '生成未完成，请稍后重试。');
+          imageError.hidden = false;
+        } finally {
+          imageButton.disabled = false;
+          imageButton.textContent = '生成竖版封面图';
+        }
+      });
+      platformSelect.addEventListener('change', () => { activePlatform = platformList()[0]; render(); });
+      document.querySelectorAll('input[name="solution"]').forEach(input => input.addEventListener('change', render));
+      audienceSelect.addEventListener('change', render);
+      document.getElementById('pain-file').addEventListener('change', async event => {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        if (!file.name.toLowerCase().endsWith('.txt') || file.size > 100000) {
+          showToast('请选择小于 100KB 的 TXT 文本文件');
+          event.target.value = '';
+          return;
+        }
+        try {
+          painInput.value = (await file.text()).slice(0, 300);
+          document.getElementById('upload-status').textContent = `已读取 ${file.name}`;
+          render();
+        } catch {
+          showToast('文件读取失败，请直接粘贴内容');
+        }
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>
